@@ -9,7 +9,7 @@ class MainWindow(QtGui.QWidget):
 	def __init__(self):
 		QtGui.QWidget.__init__(self)
 		self.setGeometry(0,0,500,650)
-		self.setWindowTitle('Tabbed')
+		self.setWindowTitle('sPYder')
 		self.setWindowIcon(QtGui.QIcon('icon.png'))
 		self.resize(800,600)
 		self.setMinimumSize(500,650)
@@ -118,16 +118,19 @@ class MainWindow(QtGui.QWidget):
 				Webview widget.
 				"""
 				curl = tb_url.text() if tb_url.text() else default_url
-				purl=curl
-				curl=curl.split(' ')
-				if len(curl)==1 and '.' not in purl:
-					curl=purl
-					if not curl[:7]=='http://':
-						url='http://'+curl
+				if curl==default_url:
+					url='http://'+default_url
 				else:
-					url='http://www.google.co.in/?client=ubuntu#channel=fs&q='+curl[0]
-					for i in range(1,len(curl)):
-						url+=str('+'+curl[i])
+					purl=curl
+					purl=curl.split(' ')
+					print purl
+					if len(purl)==1 and '.' in curl:
+						if not curl[:7]=='http://':
+							url='http://'+curl
+					else:
+						url='http://www.google.co.in/?client=ubuntu#channel=fs&q='+purl[0]
+						for i in range(1,len(purl)):
+							url+=str('+'+purl[i])
 				html.load(QtCore.QUrl(url))
 				html.show()
 			
