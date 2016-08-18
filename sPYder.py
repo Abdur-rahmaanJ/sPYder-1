@@ -1,6 +1,3 @@
-
-
-
 import os,sys
 import urllib
 import scapy
@@ -9,8 +6,6 @@ from PyQt4 import QtGui,QtCore, QtWebKit
 
 class MainWindow(QtGui.QWidget):
 	#number of tabs limit
-	i=15
-	
 	def __init__(self):
 		QtGui.QWidget.__init__(self)
 		self.setGeometry(0,0,500,650)
@@ -19,6 +14,7 @@ class MainWindow(QtGui.QWidget):
 		self.resize(800,600)
 		self.setMinimumSize(500,650)
 		
+		indx=1
 				
 		#tab widget
 		tab_widget=QtGui.QTabWidget(self)
@@ -26,22 +22,42 @@ class MainWindow(QtGui.QWidget):
 		p_vertical=[]
 		#add tab
 		def adder(self):
-			if len(tabs)<10:
+			if len(tabs)<10 or True:
 				tabs.append(tabber())
 				p_vertical.append(QtGui.QVBoxLayout(tabs[-1]))
 				tab_widget.addTab(tabs[-1],'tab'+str(len(tabs)))
+				
 				self.setLayout(vbox)
 		
 		#remove tab
 		def remover(self):
-			if len(tabs)>1:
+			if len(tabs)>1 or True:
 				ind=tab_index()
 				tabs.pop(ind)
 				p_vertical.pop(ind)
 				tab_widget.removeTab(ind)
-		
+		#set label
+
 		#tab layout
 		def tabber():
+			##tab functions##
+			fin_url=''
+			def TabLabel0():
+				print ''
+			def TabLabel(t):
+				if t==True:
+					ind=tab_index()
+					tab_widget.setTabText(indx,html.title())
+					#fin_url=QtWebKit.QWebView.getUrl()
+			def UrlChanged(url):
+				indx=tab_index()
+				tb_url.setText(url.toString())
+			def FinalUrlChanged(url):
+				#indx=tab_index()
+				tb_url.setText(url.toString())
+				#TabLabel(True)
+
+			#tab inits
 			tabcentral=QtGui.QWidget()
 			tabframe=QtGui.QFrame(tabcentral)
 			tabgrid = QtGui.QVBoxLayout(tabframe)
@@ -50,8 +66,10 @@ class MainWindow(QtGui.QWidget):
 			tabmain = QtGui.QHBoxLayout(tabcentral)
 			tabmain.setSpacing(0)
 			tabmain.setMargin(1)
+			
 			#address
 			tb_url = QtGui.QLineEdit(tabframe)
+			
 			##buttons
 			bt_back = QtGui.QPushButton(tabframe)
 			bt_ahead = QtGui.QPushButton(tabframe)
@@ -59,6 +77,7 @@ class MainWindow(QtGui.QWidget):
 			bt_rem = QtGui.QPushButton(tabframe)
 			bt_go = QtGui.QPushButton(tabframe)
 			bt_kill = QtGui.QPushButton(tabframe)
+			
 			###button styles and activities
 			bt_back.setIcon(QtGui.QIcon().fromTheme("go-previous"))
 			bt_ahead.setIcon(QtGui.QIcon().fromTheme("go-next"))
@@ -81,6 +100,13 @@ class MainWindow(QtGui.QWidget):
 			address_area.addWidget(bt_kill)
 			tabgrid.addLayout(address_area)
 			html=QtWebKit.QWebView()
+			
+			##address delegates
+			html.page().setLinkDelegationPolicy(QtWebKit.QWebPage.DelegateAllLinks)
+			html.connect(html, QtCore.SIGNAL("linkClicked(const QUrl&)"), UrlChanged)
+			html.connect(html, QtCore.SIGNAL("loadStarted()"), TabLabel0)
+			html.connect(html, QtCore.SIGNAL("loadFinished(bool)"), TabLabel)
+			html.connect(html, QtCore.SIGNAL("urlChanged(const QUrl&)"), FinalUrlChanged)
 			tabgrid.addWidget(html)
 			tabmain.addWidget(tabframe)
 			
@@ -92,8 +118,16 @@ class MainWindow(QtGui.QWidget):
 				Webview widget.
 				"""
 				curl = tb_url.text() if tb_url.text() else default_url
-				if not curl[:7]=='http://':
-					url='http://'+curl
+				purl=curl
+				curl=curl.split(' ')
+				if len(curl)==1 and '.' not in purl:
+					curl=purl
+					if not curl[:7]=='http://':
+						url='http://'+curl
+				else:
+					url='http://www.google.co.in/?client=ubuntu#channel=fs&q='+curl[0]
+					for i in range(1,len(curl)):
+						url+=str('+'+curl[i])
 				html.load(QtCore.QUrl(url))
 				html.show()
 			
@@ -102,21 +136,24 @@ class MainWindow(QtGui.QWidget):
 			tabmain.connect(bt_back, QtCore.SIGNAL("clicked()"), html.back)
 			tabmain.connect(bt_ahead, QtCore.SIGNAL("clicked()"), html.forward)
 			tabmain.connect(bt_kill, QtCore.SIGNAL("clicked()"),html.forward)
-			
+			print html.title()
 			tb_url.setText(default_url)
 			browse()
 			return tabcentral
-		
         ##within tab
 		tabs.append(tabber())
 		
-		##
-		'''tabButton = QtGui.QToolButton(self)
-		tabButton.setText('+')
-		tab_widget.setCornerWidget(self.tabButton)
-		tabButton.clicked.connect(self.adder)
-		
-		tabs.append(tabButton)'''
+		##TabButton
+		'''tabButton1 = QtGui.QToolButton(self)
+		tabButton1.setText('+')
+		tab_widget.setCornerWidget(tabButton1)
+		tabButton1.clicked.connect(adder)
+		tabButton2 = QtGui.QToolButton(self)
+		tabButton2.setText('-')
+		tab_widget.setCornerWidget(tabButton2)
+		tabButton2.clicked.connect(remover)
+		'''
+		#tabs.append(tabButton)
 		p_vertical.append(QtGui.QVBoxLayout(tabs[-1]))
 		tab_widget.addTab(tabs[-1],'tab1')
 		#tab_widget.setTabText(0,'working')
@@ -132,11 +169,11 @@ class MainWindow(QtGui.QWidget):
 		
 		
 	
-	#center position the window
+	#center position the window	
 	def center(self):
 		screen=QtGui.QDesktopWidget.screenGeometry()
 		size=self.geometry()
-		self.move((screen.width()-size.width())/2,(screen.height()-size.height())/2)
+		self.move((screen.width()-size.width())/3,(screen.height()-size.height())/3)
 def main():
 	app=QtGui.QApplication(sys.argv)
 	frame=MainWindow()
