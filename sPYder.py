@@ -150,8 +150,6 @@ class MainWindow(QtGui.QWidget):
 			return tabcentral
         ##within tab
 		tabs.append(tabber())
-		
-		##TabButton
 
 		#tabs.append(tabButton)
 		p_vertical.append(QtGui.QVBoxLayout(tabs[-1]))
