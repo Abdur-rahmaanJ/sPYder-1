@@ -1,3 +1,10 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# python 2.7.10 sPYder web browser
+# by Shivanjan Chakravorty
+# tinkerers are welcome to play with the code
+
 import os,sys,urllib,scapy
 from PyQt4 import QtGui,QtCore, QtWebKit
 
